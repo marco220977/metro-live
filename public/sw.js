@@ -1,6 +1,6 @@
 // Service worker minimal : met l'appli en cache pour un démarrage rapide.
 // Les données temps réel (/api/) ne sont jamais mises en cache.
-const CACHE = "pp-v1";
+const CACHE = "pp-v2";
 const SHELL = ["/", "/index.html", "/manifest.json", "/icon.svg", "/icon-192.png", "/icon-512.png"];
 
 self.addEventListener("install", (e) => {
