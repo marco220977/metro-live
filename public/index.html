@@ -306,7 +306,7 @@ header{display:flex;align-items:center;gap:12px;padding-block:14px 10px;position
     $("stopName").innerHTML = f ? `${esc(f.name)}<small id="stopSub">${esc(f.sub && f.sub !== f.name ? f.sub : "Île-de-France")}</small>` : `Aucun arrêt<small id="stopSub">Ajoute un arrêt pour voir les passages</small>`;
     $("empty").hidden = !!f;
     $("status").hidden = !f;
-    $("btnReport").hidden = !f || reportsOff;
+    $("btnReport").hidden = !f;
     if (!f) $("alerts").hidden = true;
     if (!f) { $("rows").innerHTML = ""; $("filters").hidden = true; }
   }
@@ -490,7 +490,7 @@ header{display:flex;align-items:center;gap:12px;padding-block:14px 10px;position
 
   async function reportsCall(opts) {
     const r = await fetch("/api/reports" + (opts ? "" : "?stop=" + encodeURIComponent(current)), opts ? { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(opts) } : {});
-    if (r.status === 503) { reportsOff = true; $("btnReport").hidden = true; $("alerts").hidden = true; return null; }
+    if (r.status === 503) { reportsOff = true; $("alerts").hidden = true; return null; }
     const j = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(j.error || "Signalements indisponibles.");
     return j.reports || [];
@@ -523,6 +523,7 @@ header{display:flex;align-items:center;gap:12px;padding-block:14px 10px;position
   }
   function openReport() {
     const f = favs.find((x) => x.id === current); if (!f) return;
+    if (reportsOff) { toast("Signalements pas encore activés : crée la base Upstash sur Vercel"); return; }
     repType = null; repLine = null; $("repMsg").value = ""; $("repCount").textContent = "0 / 140";
     $("repStop").textContent = "Arrêt : " + f.name;
     $("repTypes").innerHTML = TYPES.map((t) => `<button class="type" data-k="${t.k}" aria-pressed="false"><span>${t.ico}</span>${t.label}</button>`).join("");
